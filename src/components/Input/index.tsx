@@ -1,9 +1,10 @@
 import {
+  Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
   InputGroup,
-  InputLeftElement,
+  InputRightElement,
   Input as ChakraInput,
   InputProps as ChakraInputProps,
 } from "@chakra-ui/react";
@@ -18,7 +19,7 @@ import { FieldError } from "react-hook-form";
 import { IconType } from "react-icons/lib";
 
 interface InputProps extends ChakraInputProps {
-  name: string;
+  name?: string;
   label?: string;
   error?: FieldError | null;
   icon?: IconType;
@@ -59,37 +60,46 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
       return setVariation("filled");
     }
   }, [error, value]);
-  console.log(inputVariation.default)
 
   return (
     <FormControl isInvalid={!!error}>
-      {!!label && <FormLabel color="grey.300">{label}</FormLabel>}
       <InputGroup flexDirection="column">
+      {!!label && (
+        <FormLabel color="grey.300" h="15px" fontSize="xs">
+          {label}
+        </FormLabel>
+      )}
+      <ChakraInput
+        id={name}
+        name={name}
+        onChangeCapture={(e) => setValue(e.currentTarget.value)}
+        onBlurCapture={handleInputBlur}
+        onFocus={handleInputFocus}
+        borderColor={inputVariation[variation]}
+        color={inputVariation[variation]}
+        variant="outline"
+        _hover={{ bgColor: "grey.0" }}
+        _placeholder={{ color: "grey.300" }}
+        _focus={{
+          bg: "grey.0",
+        }}
+        size="lg"
+        h="60px"
+        ref={ref}
+        {...rest}
+      />
         {Icon && (
-          <InputLeftElement>
-            <Icon />
-          </InputLeftElement>
+          <InputRightElement>
+            <Button bg="primaryPalette.primary" color="white" right="20px" top="10px">
+              <Icon />
+            </Button>
+          </InputRightElement>
         )}
-         <ChakraInput
-          id={name}
-          name={name}
-          onChangeCapture={(e) => setValue(e.currentTarget.value)}
-          onBlurCapture={handleInputBlur}
-          onFocus={handleInputFocus}
-          borderColor={inputVariation[variation]}
-          color={inputVariation[variation]}
-          variant="outline"
-          _hover={{ bgColor: "grey.0" }}
-          _placeholder={{ color: "grey.300" }}
-          _focus={{
-            bg: "grey.0",
-          }}
-          size="lg"
-          h="60px"
-          ref={ref}
-          {...rest}
-        />
-        {!!error && <FormErrorMessage color="feedback.negative">{error.message}</FormErrorMessage>}
+        {!!error && (
+          <FormErrorMessage color="feedback.negative">
+            {error.message}
+          </FormErrorMessage>
+        )}
       </InputGroup>
     </FormControl>
   );
